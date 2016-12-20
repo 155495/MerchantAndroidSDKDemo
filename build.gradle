@@ -16,6 +16,23 @@ allprojects {
         maven {
             url "https://docs.phonepe.com/repository/maven-public/"
         }
+
+        maven {
+            url "http://sharath123.bintray.com/demo1"
+        }
+
+        maven {
+            url "http://artifactory.phonepe.com/content/repositories/snapshots/"
+        }
+
+
+        maven {
+            url "http://phonepe.bintray.com/PhonePeAndroidSDK-SNAPSHOT"
+            credentials {
+                username '<Your UserName>'
+                password '<Your Password>'
+            }
+        }
     }
 }
 

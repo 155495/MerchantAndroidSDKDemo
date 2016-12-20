@@ -20,14 +20,18 @@ import com.phonepe.android.sdk.base.enums.CreditType;
 import com.phonepe.android.sdk.base.enums.ErrorCode;
 import com.phonepe.android.sdk.base.listeners.AccountDetailsListener;
 import com.phonepe.android.sdk.base.listeners.TransactionCompleteListener;
+import com.phonepe.android.sdk.base.models.AccountingInfo;
 import com.phonepe.android.sdk.base.models.CreditRequest;
 import com.phonepe.android.sdk.base.models.DebitRequest;
 import com.phonepe.android.sdk.base.models.ErrorInfo;
 import com.phonepe.android.sdk.base.models.OrderInfo;
 import com.phonepe.android.sdk.base.models.PayInstrumentOption;
+import com.phonepe.android.sdk.base.models.PaymentInstrumentsPreference;
+import com.phonepe.android.sdk.domain.builders.AccountingInfoBuilder;
 import com.phonepe.android.sdk.domain.builders.CreditRequestBuilder;
 import com.phonepe.android.sdk.domain.builders.DebitRequestBuilder;
 import com.phonepe.android.sdk.domain.builders.OrderInfoBuilder;
+import com.phonepe.android.sdk.domain.builders.PaymentInstrumentPreferenceBuilder;
 import com.phonepe.android.sdk.domain.builders.SignUpRequestBuilder;
 import com.phonepe.android.sdk.domain.builders.UserInfoBuilder;
 import com.phonepe.android.sdk.utils.CheckSumUtils;
@@ -37,9 +41,13 @@ import com.phonepe.merchantsdk.demo.utils.Constants;
 
 import java.util.UUID;
 
-import butterknife.Bind;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
+
+
 import butterknife.OnClick;
+import infinitec.demomodule.Infinite;
 
 public class FlipkartActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -50,25 +58,25 @@ public class FlipkartActivity extends AppCompatActivity
     private String mEmail;
     private String mName;
 
-    @Bind(R.id.image01)
+    @BindView(R.id.image01)
     View image01;
 
-    @Bind(R.id.image02)
+    @BindView(R.id.image02)
     View image02;
 
-    @Bind(R.id.image03)
+    @BindView(R.id.image03)
     View image03;
 
-    @Bind(R.id.image04)
+    @BindView(R.id.image04)
     View image04;
 
-    @Bind(R.id.refund01)
+    @BindView(R.id.refund01)
     View refund01;
 
-    @Bind(R.id.refund02)
+    @BindView(R.id.refund02)
     View refund02;
 
-    @Bind(R.id.clickBlocker)
+    @BindView(R.id.clickBlocker)
     View clickBlocker;
 
     @OnClick(R.id.image01)
@@ -132,6 +140,8 @@ public class FlipkartActivity extends AppCompatActivity
 
         ((TextView)(headerLayout.findViewById(R.id.email) )).setText(mEmail);
         ((TextView)(headerLayout.findViewById(R.id.username) )).setText(mName);
+
+        Infinite.testMethod();
     }
 
     @Override
@@ -174,21 +184,7 @@ public class FlipkartActivity extends AppCompatActivity
             setRefundVisibility(refund01,refund02);
 
         } else if (id == R.id.drawer_account) {
-            String userId = CacheUtils.getInstance(this).getUserId();
-            //String userId = UUID.randomUUID().toString().substring(0, 15);
-            String checksum = CheckSumUtils.getCheckSumForNonTransaction(Constants.MERCHANT_ID, userId, Constants.SALT, Constants.SALT_KEY_INDEX);
-
-            PhonePe.showAccountDetails(checksum, userId, new AccountDetailsListener() {
-                @Override
-                public void onSignUpClicked() {
-                    startLoginRegister(false);
-                }
-
-                @Override
-                public void onSignInClicked() {
-                    startLoginRegister(true);
-                }
-            });
+            PhonePe.showAccountDetails(CacheUtils.getInstance(this).getUserId(),null);
 
         }else if(id == R.id.drawer_settings)
         {
@@ -230,7 +226,6 @@ public class FlipkartActivity extends AppCompatActivity
 
     private void startPayment() {
         Long amount = ITEM_AMOUNT;
-        PayInstrumentOption instrumentOption = PayInstrumentOption.ANY;
         final String txnId = UUID.randomUUID().toString().substring(0, 15);
         String userId = CacheUtils.getInstance(this).getUserId();
         String checksum = CheckSumUtils.getCheckSumForPayment(Constants.MERCHANT_ID, txnId, amount * 100, Constants.SALT, Constants.SALT_KEY_INDEX);
@@ -257,26 +252,22 @@ public class FlipkartActivity extends AppCompatActivity
                 .setMessage("Payment towards 'Batman : Arkham Origins' (Order No. OD139924923)")
                 .build();
 
+        AccountingInfo accountingInfo = new AccountingInfoBuilder().setSubMerchant("xMerchantId").build();
+
+        PaymentInstrumentsPreference paymentInstrumentsPreference = new PaymentInstrumentPreferenceBuilder().setDefault().build();
+
         DebitRequest debitRequest = new DebitRequestBuilder()
                 .setTransactionId(txnId)
                 .setAmount(amount * 100)
-                .setPaymentInstrumentOption(instrumentOption)
+                .setPaymentInstrumentsPreference(paymentInstrumentsPreference)
                 .setOrderInfo(orderInfo)
                 .setUserInfo(userInfoBuilder.build())
+                .setAccountingInfo(accountingInfo)
                 .setChecksum(checksum)
                 .build();
 
-        PhonePe.initiateDebit(debitRequest, new TransactionCompleteListener() {
-            @Override
-            public void onTransactionComplete() {
-                trackTxnStatus(txnId, false);
-            }
 
-            @Override
-            public void onTransactionFailed(ErrorInfo errorInfo) {
-                trackTxnStatus(txnId, errorInfo.getCode() == ErrorCode.ERROR_CANCELED);
-            }
-        });
+        startActivityForResult(PhonePe.getDebitIntent(this, Constants.MERCHANT_ID, debitRequest), 300);
     }
 
     void startCredit() {
@@ -360,7 +351,7 @@ public class FlipkartActivity extends AppCompatActivity
             signUpRequestBuilder.setShortName(mName);
         }
 
-        PhonePe.initiateRegister(signUpRequestBuilder.build(), new TransactionCompleteListener() {
+    /*    PhonePe.initiateRegister(signUpRequestBuilder.build(), new TransactionCompleteListener() {
             @Override
             public void onTransactionComplete() {
                 Toast.makeText(FlipkartActivity.this, "Complete", Toast.LENGTH_SHORT).show();
@@ -370,7 +361,7 @@ public class FlipkartActivity extends AppCompatActivity
             public void onTransactionFailed(ErrorInfo errorInfo) {
                 trackTxnStatus(txnId, errorInfo.getCode() == ErrorCode.ERROR_CANCELED);
             }
-        });
+        });*/
     }
 
     private void trackTxnStatus(final String txnId, final boolean wascanceled) {
