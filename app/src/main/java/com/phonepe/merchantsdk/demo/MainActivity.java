@@ -12,51 +12,56 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.phonepe.android.sdk.api.PhonePe;
-import com.phonepe.android.sdk.base.listeners.DataListener;
 import com.phonepe.android.sdk.base.enums.CreditType;
 import com.phonepe.android.sdk.base.enums.ErrorCode;
-import com.phonepe.android.sdk.base.enums.WalletState;
+import com.phonepe.android.sdk.base.models.AccountingInfo;
 import com.phonepe.android.sdk.base.models.ErrorInfo;
-import com.phonepe.android.sdk.base.networking.response.DebitSuggestion;
+import com.phonepe.android.sdk.base.models.InstrumentSplitPreference;
+import com.phonepe.android.sdk.base.models.PaymentInstrumentsPreference;
+import com.phonepe.android.sdk.domain.builders.AccountingInfoBuilder;
 import com.phonepe.android.sdk.domain.builders.CreditRequestBuilder;
 import com.phonepe.android.sdk.domain.builders.DebitRequestBuilder;
 import com.phonepe.android.sdk.domain.builders.OrderInfoBuilder;
+import com.phonepe.android.sdk.domain.builders.PaymentInstrumentPreferenceBuilder;
 import com.phonepe.android.sdk.domain.builders.SignUpRequestBuilder;
 import com.phonepe.android.sdk.domain.builders.UserInfoBuilder;
 
 import com.phonepe.android.sdk.base.listeners.TransactionCompleteListener;
-import com.phonepe.android.sdk.base.listeners.AccountDetailsListener;
 import com.phonepe.android.sdk.base.models.CreditRequest;
 import com.phonepe.android.sdk.base.models.DebitRequest;
 import com.phonepe.android.sdk.base.models.OrderInfo;
 import com.phonepe.android.sdk.base.models.PayInstrumentOption;
 import com.phonepe.android.sdk.utils.CheckSumUtils;
+import com.phonepe.merchantsdk.demo.utils.AppUtils;
 import com.phonepe.merchantsdk.demo.utils.CacheUtils;
 import com.phonepe.merchantsdk.demo.utils.Constants;
 
 import java.util.UUID;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+import static com.phonepe.merchantsdk.demo.utils.AppUtils.isEmpty;
 
-    @Bind(R.id.id_debit_amount)
+public class MainActivity extends AppCompatActivity {
+    private static final long ITEM_AMOUNT = 420l;
+
+    @BindView(R.id.id_debit_amount)
     TextView mDebitAmountTextView;
 
-    @Bind(R.id.id_credit_amount)
+    @BindView(R.id.id_credit_amount)
     TextView mCreditAmountTextView;
 
-    @Bind(R.id.id_result)
+    @BindView(R.id.id_result)
     TextView resultTextView;
 
-    @Bind(R.id.id_credit_type)
+    @BindView(R.id.id_credit_type)
     SwitchCompat mCreditTypeOption;
 
     @OnClick(R.id.id_install)
     void installPhonePe() {
-        PhonePe.installPhone(this);
+        //PhonePe.installPhone(this);
     }
 
     @OnClick(R.id.id_register)
@@ -74,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
         startCredit();
     }
 
+    @OnClick(R.id.id_flipkart)
+    void showFlipkartDemo() {
+        startFlipkart();
+    }
+
 
     private String mMobileNo;
     private String mEmail;
@@ -82,20 +92,24 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.id_account)
     void showAccountDetails() {
         String userId = CacheUtils.getInstance(this).getUserId();
-        //String userId = UUID.randomUUID().toString().substring(0, 15);
-        String checksum = CheckSumUtils.getCheckSumForNonTransaction(Constants.MERCHANT_ID, userId, Constants.SALT, Constants.SALT_KEY_INDEX);
 
-        PhonePe.showAccountDetails(checksum, userId, new AccountDetailsListener() {
-            @Override
-            public void onSignUpClicked() {
-                startLoginRegister(false);
-            }
+        UserInfoBuilder userInfoBuilder = new UserInfoBuilder()
+                .setUserId(userId);
 
-            @Override
-            public void onSignInClicked() {
-                startLoginRegister(true);
-            }
-        });
+
+        if (!isEmpty(mMobileNo)) {
+            userInfoBuilder.setMobileNumber(mMobileNo);
+        }
+
+        if (!isEmpty(mEmail)) {
+            userInfoBuilder.setEmail(mEmail);
+        }
+
+        if (!isEmpty(mName)) {
+            userInfoBuilder.setShortName(mName);
+        }
+
+        PhonePe.showAccountDetails(userId, userInfoBuilder.build());
     }
 
     //*********************************************************************
@@ -108,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_new);
         ButterKnife.bind(this);
         setDefaults();
-        getWalletBalance();
     }
 
     @Override
@@ -146,6 +159,12 @@ public class MainActivity extends AppCompatActivity {
     // Private class
     //*********************************************************************
 
+    private void startFlipkart()
+    {
+        Intent intent = new Intent(MainActivity.this, FlipkartActivity.class);
+        startActivity(intent);
+    }
+
     private void setDefaults() {
         mDebitAmountTextView.setText("Rs. " + CacheUtils.getInstance(this).getAmountForTransaction());
         mCreditAmountTextView.setText("Rs. " + CacheUtils.getInstance(this).getAmountForTransaction());
@@ -181,9 +200,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isEmpty(mName)) {
             signUpRequestBuilder.setShortName(mName);
+
+            Toast.makeText(MainActivity.this, "Not supported in v1", Toast.LENGTH_SHORT).show();
         }
 
-        PhonePe.initiateRegister(signUpRequestBuilder.build(), new TransactionCompleteListener() {
+     /*   PhonePe.initiateRegister(signUpRequestBuilder.build(), new TransactionCompleteListener() {
             @Override
             public void onTransactionComplete() {
                 Toast.makeText(MainActivity.this, "Complete", Toast.LENGTH_SHORT).show();
@@ -193,11 +214,13 @@ public class MainActivity extends AppCompatActivity {
             public void onTransactionFailed(ErrorInfo errorInfo) {
                 trackTxnStatus(txnId, errorInfo.getCode() == ErrorCode.ERROR_CANCELED);
             }
-        });
+
+
+        });*/
     }
 
     private void getWalletBalance() {
-        resultTextView.setText("Fetching wallet balance ...");
+/*        resultTextView.setText("Fetching wallet balance ...");
         String userId = CacheUtils.getInstance(this).getUserId();
         String checksum = CheckSumUtils.getCheckSumForNonTransaction(Constants.MERCHANT_ID, userId, Constants.SALT, Constants.SALT_KEY_INDEX);
 
@@ -214,19 +237,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+
             @Override
-            public void onFailure(ErrorInfo errorCode) {
-                resultTextView.setText("Failed to fetch wallet balance:" + errorCode.getCode());
+            public void onFailure(ErrorInfo errorInfo) {
+                resultTextView.setText("Failed to fetch wallet balance:" + errorInfo.getCode());
             }
-        });
+
+        });*/
     }
 
     private void startDebit() {
         Long amount = CacheUtils.getInstance(this).getAmountForTransaction();
-        PayInstrumentOption instrumentOption = PayInstrumentOption.ANY;
-        final String txnId = UUID.randomUUID().toString().substring(0, 15);
+        final String txnId = UUID.randomUUID().toString().substring(0, 35);
         String userId = CacheUtils.getInstance(this).getUserId();
-        String checksum = CheckSumUtils.getCheckSumForPayment(Constants.MERCHANT_ID, txnId, amount * 100, Constants.SALT, Constants.SALT_KEY_INDEX);
 
         UserInfoBuilder userInfoBuilder = new UserInfoBuilder()
                 .setUserId(userId);
@@ -249,37 +272,40 @@ public class MainActivity extends AppCompatActivity {
                 .setOrderId("OD139924923")
                 .setMessage("Payment towards order No. OD139924923.")
                 .build();
+
+        AccountingInfo accountingInfo = new AccountingInfoBuilder().setSubMerchant("xMerchantId").build();
+
+        PaymentInstrumentsPreference paymentInstrumentsPreference = new PaymentInstrumentPreferenceBuilder()
+                .setWalletAllowed(false)
+                .setAccountAllowed(true)
+                .setCreditCardAllowed(false)
+                .setDebitCardAllowed(false)
+                .setNetBankingAllowed(false)
+                .setInstrumentSplitPreference(InstrumentSplitPreference.MULTI_INSTRUMENT_MODE)
+                .build();
+
 
         DebitRequest debitRequest = new DebitRequestBuilder()
                 .setTransactionId(txnId)
                 .setAmount(amount * 100)
-                .setPaymentInstrumentOption(instrumentOption)
+                .setPaymentInstrumentsPreference(paymentInstrumentsPreference)
+                .setAccountingInfo(accountingInfo)
                 .setOrderInfo(orderInfo)
                 .setUserInfo(userInfoBuilder.build())
-                .setChecksum(checksum)
                 .build();
 
-        PhonePe.initiateDebit(debitRequest, new TransactionCompleteListener() {
-            @Override
-            public void onTransactionComplete() {
-                trackTxnStatus(txnId, false);
-            }
-
-            @Override
-            public void onTransactionFailed(ErrorInfo code) {
-                trackTxnStatus(txnId, code.getCode().equals(ErrorCode.ERROR_CANCELED));
-            }
-        });
+        startActivityForResult(PhonePe.getDebitIntent(this, Constants.MERCHANT_ID, debitRequest), 300);
     }
 
     void startCredit() {
-        Long amount = CacheUtils.getInstance(this).getAmountForTransaction();
+        Long amount = ITEM_AMOUNT;
         final String txnId = UUID.randomUUID().toString().substring(0, 15);
         String userId = CacheUtils.getInstance(this).getUserId();
+
         CreditType creditType = CreditType.INSTANT;
-        if (mCreditTypeOption.isChecked()) {
+        /*  if (mCreditTypeOption.isChecked()) {
             creditType = CreditType.DEFERRED;
-        }
+        }*/
 
         String checksum = CheckSumUtils.getCheckSumForPayment(Constants.MERCHANT_ID, txnId, amount * 100, Constants.SALT, Constants.SALT_KEY_INDEX);
 
@@ -300,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
 
         OrderInfo orderInfo = new OrderInfoBuilder()
                 .setOrderId("OD139924923")
-                .setMessage("Payment towards order No. OD139924923.")
+                .setMessage("Payment towards 'Batman : Arkham Origins' (Order No. OD139924923)")
                 .build();
 
         CreditRequest creditRequest = new CreditRequestBuilder()
@@ -319,8 +345,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onTransactionFailed(ErrorInfo code) {
-                trackTxnStatus(txnId, code.getCode().equals(ErrorCode.ERROR_CANCELED));
+            public void onTransactionFailed(ErrorInfo errorInfo) {
+                trackTxnStatus(txnId, errorInfo.getCode() == ErrorCode.ERROR_CANCELED);
             }
         });
     }
@@ -329,12 +355,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(ResultActivity.getInstance(this, txnId, wascanceled));
         overridePendingTransition(0, 0);
     }
-
-
-    protected boolean isEmpty(String string) {
-        return string == null || string.trim().equals("");
-    }
-
 
     //*********************************************************************
     // End of the class

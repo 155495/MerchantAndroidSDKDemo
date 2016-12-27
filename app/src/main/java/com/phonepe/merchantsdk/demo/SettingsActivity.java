@@ -8,25 +8,25 @@ import android.widget.EditText;
 
 import com.phonepe.merchantsdk.demo.utils.CacheUtils;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    @Bind(R.id.id_user_id)
+    @BindView(R.id.id_user_id)
     EditText mUserIdText;
 
-    @Bind(R.id.id_amount)
+    @BindView(R.id.id_amount)
     EditText mAmountText;
 
-    @Bind(R.id.id_name)
+    @BindView(R.id.id_name)
     EditText mNameText;
 
-    @Bind(R.id.id_mobile)
+    @BindView(R.id.id_mobile)
     EditText mMobileText;
 
-    @Bind(R.id.id_email)
+    @BindView(R.id.id_email)
     EditText mEmailText;
 
     @OnClick(R.id.id_save)

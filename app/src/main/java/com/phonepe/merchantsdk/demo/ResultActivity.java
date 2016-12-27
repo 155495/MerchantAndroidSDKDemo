@@ -11,12 +11,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.phonepe.android.sdk.base.listeners.DataListener;
+import com.phonepe.android.sdk.base.models.ErrorInfo;
 import com.phonepe.android.sdk.base.networking.response.TransactionStatus;
 import com.phonepe.merchantsdk.demo.utils.Constants;
 import com.phonepe.android.sdk.api.PhonePe;
 import com.phonepe.android.sdk.utils.CheckSumUtils;
 
-import butterknife.Bind;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -28,13 +30,13 @@ public class ResultActivity extends AppCompatActivity {
     private static final String KEY_TXN_ID = "key_txn_id";
     private static final String KEY_IS_CANCELED = "key_was_canceled";
 
-    @Bind(R.id.id_result)
+    @BindView(R.id.id_result)
     TextView mTextView;
 
-    @Bind(R.id.id_progressBar)
+    @BindView(R.id.id_progressBar)
     ProgressBar mProgressBar;
 
-    @Bind(R.id.id_back_button)
+    @BindView(R.id.id_back_button)
     Button mBackButton;
 
     @OnClick(R.id.id_back_button)
@@ -93,7 +95,7 @@ public class ResultActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(int errorCode) {
+            public void onFailure(ErrorInfo errorInfo) {
                 mProgressBar.setVisibility(View.GONE);
                 mBackButton.setVisibility(View.VISIBLE);
                 mTextView.setText("Failed to load status of transaction");
