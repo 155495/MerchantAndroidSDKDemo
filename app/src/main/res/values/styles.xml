@@ -18,9 +18,7 @@
         <item name="ph_textColorAccent">@color/secondary_text</item>
         <item name="ph_enableToolbarShadow">true</item>
         <item name="ph_merchantName">Merchant</item>
-        <item name="ph_merchantLogo">
-            https://d32dgd8o7pwmnt.cloudfront.net/images/merchants/200/200/M2306160483220675579140.png
-        </item>
+        <item name="ph_merchantIcon">@drawable/ic_logo</item>
     </style>
 
     <style name="PhonePeTheme" parent="MyCustomPhonePeTheme" />

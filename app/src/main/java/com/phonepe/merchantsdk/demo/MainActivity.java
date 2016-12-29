@@ -190,33 +190,19 @@ public class MainActivity extends AppCompatActivity {
                 .setChecksum(checksum);
 
 
-        if (!isEmpty(mMobileNo)) {
+        if (!AppUtils.isEmpty(mMobileNo)) {
             signUpRequestBuilder.setMobileNumber(mMobileNo);
         }
 
-        if (!isEmpty(mEmail)) {
+        if (!AppUtils.isEmpty(mEmail)) {
             signUpRequestBuilder.setEmail(mEmail);
         }
 
-        if (!isEmpty(mName)) {
+        if (!AppUtils.isEmpty(mName)) {
             signUpRequestBuilder.setShortName(mName);
-
-            Toast.makeText(MainActivity.this, "Not supported in v1", Toast.LENGTH_SHORT).show();
         }
 
-     /*   PhonePe.initiateRegister(signUpRequestBuilder.build(), new TransactionCompleteListener() {
-            @Override
-            public void onTransactionComplete() {
-                Toast.makeText(MainActivity.this, "Complete", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onTransactionFailed(ErrorInfo errorInfo) {
-                trackTxnStatus(txnId, errorInfo.getCode() == ErrorCode.ERROR_CANCELED);
-            }
-
-
-        });*/
+        startActivityForResult(PhonePe.getRegisterIntent(this, Constants.MERCHANT_ID, CacheUtils.getInstance(this).getUserId(), signUpRequestBuilder.build(), true), 400);
     }
 
     private void getWalletBalance() {
@@ -338,7 +324,9 @@ public class MainActivity extends AppCompatActivity {
                 .setChecksum(checksum)
                 .build();
 
-        PhonePe.initiateCredit(creditRequest, new TransactionCompleteListener() {
+        Toast.makeText(MainActivity.this, "Not supported in v1", Toast.LENGTH_SHORT).show();
+
+    /*    PhonePe.initiateCredit(creditRequest, new TransactionCompleteListener() {
             @Override
             public void onTransactionComplete() {
                 trackTxnStatus(txnId, false);
@@ -348,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTransactionFailed(ErrorInfo errorInfo) {
                 trackTxnStatus(txnId, errorInfo.getCode() == ErrorCode.ERROR_CANCELED);
             }
-        });
+        });*/
     }
 
     private void trackTxnStatus(final String txnId, final boolean wascanceled) {

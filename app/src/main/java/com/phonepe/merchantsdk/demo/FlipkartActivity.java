@@ -311,7 +311,9 @@ public class FlipkartActivity extends AppCompatActivity
                 .setChecksum(checksum)
                 .build();
 
-        PhonePe.initiateCredit(creditRequest, new TransactionCompleteListener() {
+        Toast.makeText(FlipkartActivity.this, "Not supported in v1", Toast.LENGTH_SHORT).show();
+
+    /*    PhonePe.initiateCredit(creditRequest, new TransactionCompleteListener() {
             @Override
             public void onTransactionComplete() {
                 trackTxnStatus(txnId, false);
@@ -321,7 +323,7 @@ public class FlipkartActivity extends AppCompatActivity
             public void onTransactionFailed(ErrorInfo errorInfo) {
                 trackTxnStatus(txnId, errorInfo.getCode() == ErrorCode.ERROR_CANCELED);
             }
-        });
+        });*/
     }
 
     private void startLoginRegister(boolean isLogin) {
@@ -351,17 +353,7 @@ public class FlipkartActivity extends AppCompatActivity
             signUpRequestBuilder.setShortName(mName);
         }
 
-    /*    PhonePe.initiateRegister(signUpRequestBuilder.build(), new TransactionCompleteListener() {
-            @Override
-            public void onTransactionComplete() {
-                Toast.makeText(FlipkartActivity.this, "Complete", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onTransactionFailed(ErrorInfo errorInfo) {
-                trackTxnStatus(txnId, errorInfo.getCode() == ErrorCode.ERROR_CANCELED);
-            }
-        });*/
+        startActivityForResult(PhonePe.getRegisterIntent(this, Constants.MERCHANT_ID, CacheUtils.getInstance(this).getUserId(), signUpRequestBuilder.build(), true), 400);
     }
 
     private void trackTxnStatus(final String txnId, final boolean wascanceled) {
