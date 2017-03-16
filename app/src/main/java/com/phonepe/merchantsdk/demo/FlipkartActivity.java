@@ -44,10 +44,8 @@ import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-
 import butterknife.OnClick;
-import infinitec.demomodule.Infinite;
+
 
 public class FlipkartActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -141,7 +139,6 @@ public class FlipkartActivity extends AppCompatActivity
         ((TextView)(headerLayout.findViewById(R.id.email) )).setText(mEmail);
         ((TextView)(headerLayout.findViewById(R.id.username) )).setText(mName);
 
-        Infinite.testMethod();
     }
 
     @Override

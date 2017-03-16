@@ -8,20 +8,6 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <!-- This is the way to override the styling -->
-    <style name="MyCustomPhonePeTheme" parent="PhonePe.Theme.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="ph_colorPrimary">@color/colorPrimary</item>
-        <item name="ph_colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="ph_colorAccent">@color/colorAccent</item>
-        <item name="ph_textColor">@color/secondary_text</item>
-        <item name="ph_textColorAccent">@color/secondary_text</item>
-        <item name="ph_enableToolbarShadow">true</item>
-        <item name="ph_merchantName">Merchant</item>
-        <item name="ph_merchantIcon">@drawable/ic_logo</item>
-    </style>
-
-    <style name="PhonePeTheme" parent="MyCustomPhonePeTheme" />
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>

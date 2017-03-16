@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "com.phonepe.merchantsdk.demo"
         minSdkVersion 14
@@ -12,9 +12,23 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    signingConfigs{
+        debug{
+            storeFile file("keystore")
+            storePassword 'storePassword'
+            keyAlias 'keyAlias'
+            keyPassword 'keyPassword'
         }
     }
 }
@@ -26,10 +40,7 @@ dependencies {
         compile 'com.android.support:cardview-v7:24.2.1'
         annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
         compile 'com.android.support:design:25.0.0'
-        compile 'jCentreDemoApp:demomodule:1.0.1'
-        compile 'phonepe.sdk.android.snapshot:merchantSdk:0.1.2'
-
-
+        compile 'phonepe.sdk.android.snapshot:merchantSdk:0.4.8'
         compile 'com.jakewharton:butterknife:8.4.0'
 
 }

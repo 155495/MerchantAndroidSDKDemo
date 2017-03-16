@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:2.3.0'
     }
 }
 
@@ -14,24 +14,15 @@ allprojects {
         jcenter()
 
         maven {
-            url "https://docs.phonepe.com/repository/maven-public/"
-        }
-
-        maven {
-            url "http://sharath123.bintray.com/demo1"
-        }
-
-        maven {
-            url "http://artifactory.phonepe.com/content/repositories/snapshots/"
-        }
-
-
-        maven {
             url "http://phonepe.bintray.com/PhonePeAndroidSDK-SNAPSHOT"
             credentials {
-                username '<Your UserName>'
-                password '<Your Password>'
+                username 'phonepe_android_sdk_snapshot_0_1_0@phonepe'
+                password '241e66e050783ad029cb456be057e638cd57f5d6'
             }
+        }
+
+        maven {
+            url "https://jitpack.io"
         }
     }
 }

@@ -26,7 +26,13 @@
         <!-- Replace it with your merchant id -->
         <meta-data
             android:name="com.phonepe.android.sdk.MerchantId"
-            android:value="M2306160483220675579140" />
+            android:value="<Merchant Id>" />
+
+        <!-- Replace it with your android id -->
+        <meta-data
+            android:name="com.phonepe.android.sdk.AppId"
+            android:value="<App Id>" />
+
         <meta-data
             android:name="com.phonepe.android.sdk.Debuggable"
             android:value="true" />

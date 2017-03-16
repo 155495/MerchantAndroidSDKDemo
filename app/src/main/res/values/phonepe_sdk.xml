@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ph_colorPrimary">@color/colorPrimary</color>
+    <color name="ph_colorPrimaryDark">@color/colorPrimaryDark</color>
+    <color name="ph_colorAccent">@color/colorAccent</color>
+    <color name="ph_textColor">@color/secondary_text</color>
+    <color name="ph_textColorAccent">@color/secondary_text</color>
+    <string name="ph_merchantName">Merchant</string>
+    <drawable name="ph_merchantIcon">@drawable/ic_logo</drawable>
+    <bool name="ph_enableToolbarShadow">true</bool>
+</resources>

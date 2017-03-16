@@ -16,15 +16,6 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                final PhonePeBuilder phonePeBuilder = new PhonePeBuilder(MyApplication.this)
-                        .setMerchantId("M2306160483220675579140")
-                        .setAppId("62hsiq7s")
-                        .enableDebugging(true);
-                PhonePe.init(phonePeBuilder);
-                return null;
-            }
-        }.execute();    }
+        PhonePe.init(this, null);
+    }
 }
