@@ -350,7 +350,7 @@ public class FlipkartActivity extends AppCompatActivity
             signUpRequestBuilder.setShortName(mName);
         }
 
-        startActivityForResult(PhonePe.getRegisterIntent(this, Constants.MERCHANT_ID, CacheUtils.getInstance(this).getUserId(), signUpRequestBuilder.build(), true), 400);
+        startActivityForResult(PhonePe.getLoginOrRegisterIntent(this, Constants.MERCHANT_ID, CacheUtils.getInstance(this).getUserId(), signUpRequestBuilder.build(), true), 400);
     }
 
     private void trackTxnStatus(final String txnId, final boolean wascanceled) {
